@@ -192,11 +192,11 @@ sum_data$cluster <- as.factor(sum_data$cluster)
 Visualization for avg XYZ accleration per trial by each participant. 
 
 ```{r}
-ggplot(sum_data, aes(Trial, avg_X_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average X Acceleration") + ggtitle("Avg X Acceleration per Trial by Each Participant")
+ggplot(sum_data, aes(Trial, avg_X_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average X Acceleration") + ggtitle("Avg X Acceleration per Trial by Each Participant") + theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(sum_data, aes(Trial, avg_Y_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Y Acceleration") + ggtitle("Avg Y Acceleration per Trial by Each Participant")
+ggplot(sum_data, aes(Trial, avg_Y_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Y Acceleration") + ggtitle("Avg Y Acceleration per Trial by Each Participant") + theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(sum_data, aes(Trial, avg_Z_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Z Acceleration") + ggtitle("Avg Z Acceleration per Trial by Each Participant")
+ggplot(sum_data, aes(Trial, avg_Z_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Z Acceleration") + ggtitle("Avg Z Acceleration per Trial by Each Participant") + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Visualization for avg XYZ acceleration compared to scoreby clusters.
