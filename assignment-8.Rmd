@@ -1,0 +1,223 @@
+---
+title: "assignment-8"
+author: "kimp"
+date: "12/12/2017"
+output: html_document
+---
+
+We will apply the K-means clustering algorithm to the acceleration data we collected about Wii Bowling Arm Swings using the Sensor Kinetics App.
+
+"The k-means clustering algorithm classifies n points into k clusters by assigning each point to the cluster whose average value on a set of p variables is nearest to it by some distance measure (usually Euclidean) on that set. The algorithm computes these assignments iteratively, until reassigning points and recomputing averages (over all points in a cluster) produces no changes" (https://www.cs.uic.edu/~wilkinson/Applets/cluster.html).
+
+First, I  install the three packages: "dplyr", "tidyr", and "ggplot2". 
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+Next, I combine the aggregated data from all 5 participants into one master dataframe. 
+
+```{r}
+
+setwd("~/Desktop/HUDK4050/assignment-8/Assignment_8_Data/Clean_Data")
+file.names <- list.files()
+DY_data <- read.csv("dy-clean data with scores.csv")
+KP_data <- read.csv("KPmaster.csv")
+NA_data <- read.csv("NA_master.csv")
+TZ_data <- read.csv("tz_acc_combined.csv")
+ZY_data <- read.csv("ZY_master.csv")
+all_data <- rbind(DY_data, KP_data, NA_data, TZ_data, ZY_data)
+str(all_data)
+summary(all_data)
+  
+```
+
+"The algorithm will treat each row as a value belonging to a person" so we need to make each row descriptive of one trial. I will do this by grouping by name, filtering by each trial attempt (1-10), and summarize the mean of the XYZ coordinates of the acceleration.
+
+As a result, I should total 50 rows to equal the 10 attempts of 5 participants.
+
+Note: I have also taken the absolute value of each accleration prior to calculating the mean.
+
+```{r}
+x_1 <- all_data %>% group_by(Name) %>% filter(Trial == 1) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_1 <- all_data %>% group_by(Name) %>% filter(Trial == 1) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_1 <- all_data %>% group_by(Name) %>% filter(Trial == 1) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data1 <- bind_cols(x_1, y_1, z_1)
+sum_data1$Trial <- 1
+Score <- all_data %>% group_by(Name) %>% filter(Trial == 1) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data1 <- bind_cols(sum_data1, Score)
+```
+
+```{r}
+x_2 <- all_data %>% group_by(Name) %>% filter(Trial == 2) %>% summarise(avg_X_acc = mean(abs(acc_X_value))) 
+y_2 <- all_data %>% group_by(Name) %>% filter(Trial == 2) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_2 <- all_data %>% group_by(Name) %>% filter(Trial == 2) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data2 <- bind_cols(x_2, y_2, z_2)
+sum_data2$Trial <- 2
+score <- all_data %>% group_by(Name) %>% filter(Trial == 2) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data2 <- bind_cols(sum_data2, Score)
+```
+
+```{r}
+x_3 <- all_data %>% group_by(Name) %>% filter(Trial == 3) %>% summarise(avg_X_acc = mean(abs(acc_X_value))) 
+y_3 <- all_data %>% group_by(Name) %>% filter(Trial == 3) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_3 <- all_data %>% group_by(Name) %>% filter(Trial == 3) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data3 <- bind_cols(x_3, y_3, z_3)
+sum_data3$Trial <- 3
+score <- all_data %>% group_by(Name) %>% filter(Trial == 3) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data3 <- bind_cols(sum_data3, Score)
+```
+
+```{r}
+x_4 <- all_data %>% group_by(Name) %>% filter(Trial == 4) %>% summarise(avg_X_acc = mean(abs(acc_X_value))) 
+y_4 <- all_data %>% group_by(Name) %>% filter(Trial == 4) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_4 <- all_data %>% group_by(Name) %>% filter(Trial == 4) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data4 <- bind_cols(x_4, y_4, z_4)
+sum_data4$Trial <- 4
+score <- all_data %>% group_by(Name) %>% filter(Trial == 4) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data4 <- bind_cols(sum_data4, Score)
+```
+
+```{r}
+x_5 <- all_data %>% group_by(Name) %>% filter(Trial == 5) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_5 <- all_data %>% group_by(Name) %>% filter(Trial == 5) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_5 <- all_data %>% group_by(Name) %>% filter(Trial == 5) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data5 <- bind_cols(x_5, y_5, z_5)
+sum_data5$Trial <- 5
+score <- all_data %>% group_by(Name) %>% filter(Trial == 5) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data5 <- bind_cols(sum_data5, Score)
+```
+
+```{r}
+x_6 <- all_data %>% group_by(Name) %>% filter(Trial == 6) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_6 <- all_data %>% group_by(Name) %>% filter(Trial == 6) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_6 <- all_data %>% group_by(Name) %>% filter(Trial == 6) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data6 <- bind_cols(x_6, y_6, z_6)
+sum_data6$Trial <- 6
+score <- all_data %>% group_by(Name) %>% filter(Trial == 6) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data6 <- bind_cols(sum_data6, Score)
+```
+
+```{r}
+x_7 <- all_data %>% group_by(Name) %>% filter(Trial == 7) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_7 <- all_data %>% group_by(Name) %>% filter(Trial == 7) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_7 <- all_data %>% group_by(Name) %>% filter(Trial == 7) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data7 <- bind_cols(x_7, y_7, z_7)
+sum_data7$Trial <- 7
+score <- all_data %>% group_by(Name) %>% filter(Trial == 7) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data7 <- bind_cols(sum_data7, Score)
+```
+
+```{r}
+x_8 <- all_data %>% group_by(Name) %>% filter(Trial == 8) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_8 <- all_data %>% group_by(Name) %>% filter(Trial == 8) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_8 <- all_data %>% group_by(Name) %>% filter(Trial == 8) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data8 <- bind_cols(x_8, y_8, z_8)
+sum_data8$Trial <- 8
+score <- all_data %>% group_by(Name) %>% filter(Trial == 8) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data8 <- bind_cols(sum_data8, Score)
+```
+
+```{r}
+x_9 <- all_data %>% group_by(Name) %>% filter(Trial == 9) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_9 <- all_data %>% group_by(Name) %>% filter(Trial == 9) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_9 <- all_data %>% group_by(Name) %>% filter(Trial == 9) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data9 <- bind_cols(x_9, y_9, z_9)
+sum_data9$Trial <- 9
+score <- all_data %>% group_by(Name) %>% filter(Trial == 9) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data9 <- bind_cols(sum_data9, Score)
+```
+
+```{r}
+x_10 <- all_data %>% group_by(Name) %>% filter(Trial == 10) %>% summarise(avg_X_acc = mean(abs(acc_X_value)))
+y_10 <- all_data %>% group_by(Name) %>% filter(Trial == 10) %>% summarise(avg_Y_acc = mean(abs(acc_Y_value))) %>% select(-Name)
+z_10 <- all_data %>% group_by(Name) %>% filter(Trial == 10) %>% summarise(avg_Z_acc = mean(abs(acc_Z_value))) %>% select(-Name)
+sum_data10 <- bind_cols(x_10, y_10, z_10) 
+sum_data10$Trial <- 10
+score <- all_data %>% group_by(Name) %>% filter(Trial == 10) %>% summarise(Score = mean(Score)) %>% select(-Name)
+sum_data10 <- bind_cols(sum_data10, Score)
+```
+
+Finally, I will combine all dataframes into one dataframe, sum_data.
+
+```{r}
+sum_data <- bind_rows(sum_data1, sum_data2, sum_data3, sum_data4, sum_data5, sum_data6, sum_data7, sum_data8, sum_data9, sum_data10)
+```
+
+## Part I
+
+I will create clusters by the XYZ acclerations and interpret the clusters by observing the clusters along a X-Y plot of score and acceleration, XYZ.
+
+First, I scale only the acceleration XYZ data.
+
+Logic:
+"Another pre-processing step used in K-means is to standardize the values so that they have the same range. We do this because we want to treat each week as equally important - if we do not standardise then the week with the largest range will have the greatest impact on which clusters are formed. We standardise the values by using the "scales()" command."
+* Copied and pasted from HUDK4050 Assignment 3.
+
+```{r}
+scale_acc <- select(sum_data, avg_X_acc, avg_Y_acc, avg_Z_acc)
+scale_acc <- scale(scale_acc)
+scale_acc <- as.data.frame(scale_acc)
+```
+
+```{r}
+sum_data <- select(sum_data, -avg_X_acc, -avg_Y_acc, -avg_Z_acc)
+sum_data <- bind_cols(sum_data,scale_acc)
+```
+
+
+"Now we will run the K-means clustering algorithm we talked about in class. 
+1) The algorithm starts by randomly choosing some starting values 
+2) Associates all observations near to those values with them
+3) Calculates the mean of those clusters of values
+4) Selects the observation closest to the mean of the cluster
+5) Re-associates all observations closest to this observation
+6) Continues this process until the clusters are no longer changing"
+
+We will use 3 clusters. 
+
+```{r}
+fit <- kmeans(scale_acc, 3)
+sum_data$cluster <- fit$cluster
+```
+
+## Part II - Visualization
+
+```{r}
+sum_data$cluster <- as.factor(sum_data$cluster)
+```
+
+Visualization for avg XYZ accleration per trial by each participant. 
+
+```{r}
+ggplot(sum_data, aes(Trial, avg_X_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average X Acceleration") + ggtitle("Avg X Acceleration per Trial by Each Participant")
+
+ggplot(sum_data, aes(Trial, avg_Y_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Y Acceleration") + ggtitle("Avg Y Acceleration per Trial by Each Participant")
+
+ggplot(sum_data, aes(Trial, avg_Z_acc, colour = Name)) + geom_line(stat="identity") + xlab("Trial") + ylab("Average Z Acceleration") + ggtitle("Avg Z Acceleration per Trial by Each Participant")
+```
+
+Visualization for avg XYZ acceleration compared to scoreby clusters.
+
+Note: I have removed observed outliers for X and Y accelerations to improve visualization of the clusters. 
+
+```{r}
+x <- filter(sum_data, avg_X_acc < 3)
+y <- filter(sum_data, avg_Y_acc > -1.75)
+
+ggplot(x, aes(avg_X_acc, Score, colour = cluster)) + geom_jitter(stat="identity") + xlab("Average X Acceleration") + ylab("Score") + geom_smooth(method = 'lm', se = FALSE) + ggtitle("Clusters by Score and Average X Acceleration") + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(y, aes(avg_Y_acc, Score, colour = cluster)) + geom_jitter(stat="identity") + xlab("Average Y Acceleration") + ylab("Score") + geom_smooth(method = 'lm', se = FALSE) + ggtitle("Clusters by Score and Average Y Acceleration") + theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(sum_data, aes(avg_Z_acc, Score, colour = cluster)) + geom_jitter(stat="identity") + xlab("Average Z Acceleration") + ylab("Score") + geom_smooth(method = 'lm', se = FALSE) + ggtitle("Clusters by Score and Average Z Acceleration") + theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Part 3 - Cluster Interpretation
+
+From the visualizations, I'm seeing the following:
+
+Cluster 1 - positive x, y, z acceleration, AND scores > 6.
+Cluster 2 - negative x, y, positive z, AND scores > 6 and scores < 8.
+Cluster 3 - positive and negative x (range from -2,2), y ~= 0, negative z, AND scores > 9 and scores < 4 (with 1 outlier score around 7).
